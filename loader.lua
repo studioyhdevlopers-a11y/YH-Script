@@ -44,7 +44,7 @@ HubTab:CreateButton({
       HubWindow:Destroy()
       
       local success, result = pcall(function()
-         return loadstring(game:HttpGet("PUT_RAW_LINK_OF_BIKE_FOR_EGG_HERE"))()
+         return loadstring(game:HttpGet("https://raw.githubusercontent.com/studioyhdevlopers-a11y/YH-Script/refs/heads/main/bike.lua"))()
       end)
       
       if not success then
