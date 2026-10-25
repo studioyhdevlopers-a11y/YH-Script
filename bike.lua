@@ -1,16 +1,16 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "YH Studio | Bike for Egg",
-   LoadingTitle = "Loading Bike for Egg...",
+   Name = "YH Studio | Bike for Egg [Pro]",
+   LoadingTitle = "Loading YH Script...",
    LoadingSubtitle = "by YH Dev",
    ConfigurationSaving = { Enabled = false },
    KeySystem = false,
 })
 
-local MainTab = Window:CreateTab(" Main Farm", 4483362458)
-local ZonesTab = Window:CreateTab(" Map Zones", 4483362458)
-local MiscTab = Window:CreateTab(" Extras", 4483362458)
+local MainTab = Window:CreateTab("🏠 Main Farm", 4483362458)
+local ZonesTab = Window:CreateTab("🗺️ Map Zones", 4483362458)
+local MiscTab = Window:CreateTab("⚡ Extras", 4483362458)
 
 local selectedZone = "Forest"
 local autoFarmToggle = false
@@ -30,8 +30,20 @@ MainTab:CreateDropdown({
    end,
 })
 
+local function getBestRemote()
+   for _, v in pairs(game:GetService("ReplicatedStorage"):GetDescendants()) do
+      if v:IsA("RemoteEvent") then
+         local name = v.Name:lower()
+         if name:find("egg") or name:find("steal") or name:find("collect") or name:find("claim") or name:find("bike") then
+            return v
+         end
+      end
+   end
+   return nil
+end
+
 MainTab:CreateToggle({
-   Name = "Auto Steal Egg (With Lobby Return)",
+   Name = "Auto Steal Egg (Pro Bypass & Lobby Return)",
    CurrentValue = false,
    Flag = "AutoEgg",
    Callback = function(Value)
@@ -44,6 +56,7 @@ MainTab:CreateToggle({
                if char and char:FindFirstChild("HumanoidRootPart") then
                   local hrp = char.HumanoidRootPart
                   local lobbyPos = hrp.CFrame
+                  
                   for _, obj in pairs(workspace:GetDescendants()) do
                      if obj.Name:lower() == "lobby" and (obj:IsA("BasePart") or obj:IsA("Model")) then
                         local p = obj:IsA("Model") and (obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")) or obj
@@ -63,26 +76,36 @@ MainTab:CreateToggle({
                            local nameLower = parentObj.Name:lower()
                            local parentModel = parentObj.Parent and parentObj.Parent.Name:lower() or ""
                            if (nameLower:find("egg") or parentModel:find("egg")) and (nameLower:find(selectedZone:lower()) or parentModel:find(selectedZone:lower())) then
+                              local targetPart = nil
                               if parentObj:IsA("BasePart") then
-                                 hrp.CFrame = parentObj.CFrame + Vector3.new(0, 3, 0)
-                                 targetFound = true
+                                 targetPart = parentObj
                               elseif parentObj:IsA("Model") and parentObj.PrimaryPart then
-                                 hrp.CFrame = parentObj.PrimaryPart.CFrame + Vector3.new(0, 3, 0)
-                                 targetFound = true
+                                 targetPart = parentObj.PrimaryPart
+                              elseif parentObj:IsA("Model") then
+                                 targetPart = parentObj:FindFirstChildWhichIsA("BasePart")
                               end
-                              if targetFound then
-                                 task.wait(0.2)
-                                 pcall(function() fireproximityprompt(prompt) end)
+                              
+                              if targetPart then
+                                 hrp.CFrame = targetPart.CFrame + Vector3.new(0, 2, 0)
+                                 targetFound = true
+                                 task.wait(0.15)
+                                 
+                                 pcall(function() fireproximityprompt(prompt, 0) end)
+                                 local remote = getBestRemote()
+                                 if remote then
+                                    pcall(function() remote:FireServer(selectedZone) end)
+                                 end
                                  break
                               end
                            end
                         end
                      end
                   end
+                  
                   task.wait(0.3)
                   hrp.CFrame = lobbyPos
                end
-               task.wait(1.5)
+               task.wait(1)
             end
          end)
       end
@@ -148,7 +171,7 @@ end
 
 MiscTab:CreateSlider({
    Name = "WalkSpeed Booster",
-   Range = {16, 250},
+   Range = {16, 300},
    Increment = 1,
    Suffix = "Speed",
    CurrentValue = 16,
